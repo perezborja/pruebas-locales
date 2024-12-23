@@ -30,9 +30,6 @@ jobs:
           echo "📂 Creating new version directory: ${TAGS_DIR}"
           mkdir -p /tmp/plugin/tags/${VERSION}
 
-          # Copia los archivos especificados a la carpeta de la nueva versión
-          cp readme.txt schema-structured-data-article.php /tmp/plugin/tags/${VERSION}/
-
           # Lista los archivos en la carpeta de la nueva versión
           echo "🗂️  Files in /tmp/plugin/tags/${VERSION}:"
           ls -la /tmp/plugin/tags/${VERSION}
