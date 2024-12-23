@@ -15,38 +15,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
-      # Paso 2: Obtener versión desde readme.txt
-      - name: Get version from readme.txt
-        id: version
-        run: |
-          # Buscar el valor de 'Stable tag' en el archivo readme.txt
-          if grep -q "^Stable tag:" readme.txt; then
-            VERSION=$(grep "^Stable tag:" readme.txt | awk -F': ' '{print $2}')
-          else
-            echo "❌ Stable tag not found at readme.txt"
-            exit 1
-          fi
-          echo "🚀 VERSION TO BE RELEASED ➡️  ${VERSION}"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-
-      # Paso 3: Publicar el plugin en SVN
+      # Paso 2: Publicar el plugin en SVN
       - name: Publish to SVN
         run: |
           # Instala SVN
           sudo apt-get install -y subversion
 
-          # Configura los credenciales SVN (configurados en el repositorio cómo admin)
-          SVN_USER=${{ secrets.SVN_USER }}
-          SVN_PASS=${{ secrets.SVN_PASS }}
-          SVN_URL="https://plugins.svn.wordpress.org/local-structured-schema-data-for-articles"
-          TAGS_DIR="$SVN_URL/tags/${VERSION}"
 
           # Creamos un directorio temporal
           mkdir -p /tmp/plugin
           echo "✅ /tmp/plugin directory created."
-
-          # Clonamos el repositorio SVN
-          svn checkout $SVN_URL /tmp/plugin
 
           # Nos aseguramos de que la carpeta Tags tenga un subdirectorio para la nueva versión
           echo "📂 Creating new version directory: ${TAGS_DIR}"
@@ -61,10 +39,3 @@ jobs:
 
           # Preparamos los cambios para subirlos a SVN
           cd /tmp/plugin
-          svn add * --force
-          svn commit -m "Nueva versión ${VERSION}" --username $SVN_USER --password $SVN_PASS
-
-          # Limpia la carpeta temporal
-          cd /
-          rm -rf /tmp/plugin
-          echo "🧹 /tmp/plugin directory removed."
